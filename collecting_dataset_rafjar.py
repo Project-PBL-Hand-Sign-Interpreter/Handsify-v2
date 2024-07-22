@@ -73,7 +73,7 @@ sequence_length = 20
 for action in actions:
     for sequence in range(no_sequences):
         try:
-            os.makedirs(os.path.join(DATA_PATH, action, str(sequence)))
+            os.makedirs(os.path.join(DATA_PATH, action, str(sequence + start)))
         except:
             pass
 
