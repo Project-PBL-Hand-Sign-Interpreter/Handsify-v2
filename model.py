@@ -10,13 +10,13 @@ DATA_PATH = 'dataset_rafjar'
 
 NO_KEYPOINTS = 468*3 + 21*3 + 21*3
 
-# actions = np.array(['Ada', 'Anda', 'Apakah', 'Atau', 'Bantu', 
+# actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu', 
 #                     'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
 #                     'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
 #                     'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
 #                     'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
 #                     'Tertarik', 'Untuk', 'Yang'])
-actions = np.array(['Apakah', 'Anda', 'Bisa'])
+actions = np.array(['Apa', 'Anda', 'Bisa'])
 no_sequences = 4
 sequence_length = 20
 

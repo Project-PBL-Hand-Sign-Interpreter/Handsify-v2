@@ -7,7 +7,7 @@ from tensorflow import keras
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
 
-actions = np.array(['Ada', 'Anda', 'Apakah', 'Atau', 'Bantu',
+actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu',
                     'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
                     'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
                     'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
