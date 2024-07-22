@@ -1,22 +1,24 @@
 import os
 import numpy as np
 from sklearn.model_selection import train_test_split
+from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout, TimeDistributed
 from tensorflow.keras.callbacks import TensorBoard
-from tensorflow.keras.utils import to_categorical
 
 DATA_PATH = 'dataset_rafjar'
+
+NO_KEYPOINTS = 468*3 + 21*3 + 21*3
+
 # actions = np.array(['Ada', 'Anda', 'Apakah', 'Atau', 'Bantu', 
 #                     'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
 #                     'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
 #                     'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
 #                     'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
 #                     'Tertarik', 'Untuk', 'Yang'])
-actions = np.array(["Yang"])
-
-no_sequences = 30
-sequence_length = 30
+actions = np.array(['Apakah', 'Anda', 'Bisa'])
+no_sequences = 4
+sequence_length = 20
 
 def load_dataset_by_action(data_path, actions):
     dataset = {action: [] for action in actions}
@@ -55,18 +57,16 @@ log_dir = os.path.join('Logs')
 tb_callback = TensorBoard(log_dir=log_dir)
 
 model = Sequential()
-model.add(TimeDistributed(Dense(units=128, activation='tanh'), input_shape=(30, 1662), name='time_distributed_dense'))
-model.add(LSTM(128, return_sequences=True, activation='tanh', name='lstm_1'))
-model.add(Dropout(0.2, name='dropout_1'))
-model.add(LSTM(64, return_sequences=False, activation='tanh', name='lstm_2'))
-model.add(Dropout(0.2, name='dropout_2'))
-model.add(Dense(32, activation='relu', name='dense_1'))
-model.add(Dropout(0.2, name='dropout_3'))
+model.add(LSTM(64, return_sequences=True, activation='relu', name='lstm_1', input_shape=(sequence_length, NO_KEYPOINTS)))
+model.add(LSTM(128, return_sequences=True, activation='relu', name='lstm_2'))
+model.add(LSTM(64, return_sequences=False, activation='relu', name='lstm_3'))
+model.add(Dense(64, activation='relu', name='dense_1'))
+model.add(Dense(32, activation='relu', name='dense_2'))
 model.add(Dense(actions.shape[0], activation='softmax', name='output_dense'))
 
 model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
 model.summary()
 
-model.fit(X_train, y_train, epochs=1000, callbacks=[tb_callback])
+model.fit(X_train, y_train, epochs=2000, callbacks=[tb_callback])
 
-model.save('keras/action.h5')
+model.save('keras/test_1.h5')
