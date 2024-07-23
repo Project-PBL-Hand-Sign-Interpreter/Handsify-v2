@@ -30,14 +30,14 @@ def draw_landmarks(image, results):
 
 def draw_styled_landmarks(image, results):
 
-    mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACEMESH_CONTOURS,
-                             mp_drawing.DrawingSpec(color=(80,110,10), thickness=1, circle_radius=1),
-                             mp_drawing.DrawingSpec(color=(80,256,121), thickness=1, circle_radius=1)
-                             )
+    # mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACEMESH_CONTOURS,
+    #                          mp_drawing.DrawingSpec(color=(80,110,10), thickness=1, circle_radius=1),
+    #                          mp_drawing.DrawingSpec(color=(80,256,121), thickness=1, circle_radius=1)
+    #                          )
 
     mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-                             mp_drawing.DrawingSpec(color=(121,22,76), thickness=2, circle_radius=4),
-                             mp_drawing.DrawingSpec(color=(121,44,250), thickness=2, circle_radius=2)
+                             mp_drawing.DrawingSpec(color=(0,22,76), thickness=2, circle_radius=4),
+                             mp_drawing.DrawingSpec(color=(0,44,250), thickness=2, circle_radius=2)
                              )
 
     mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
@@ -46,10 +46,10 @@ def draw_styled_landmarks(image, results):
                              )
 
 def extract_keypoints(results):
-    face = np.array([[res.x, res.y, res.z] for res in results.face_landmarks.landmark]).flatten() if results.face_landmarks else np.zeros(468*3)
+    # face = np.array([[res.x, res.y, res.z] for res in results.face_landmarks.landmark]).flatten() if results.face_landmarks else np.zeros(468*3)
     lh = np.array([[res.x, res.y, res.z] for res in results.left_hand_landmarks.landmark]).flatten() if results.left_hand_landmarks else np.zeros(21*3)
     rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(21*3)
-    return np.concatenate([face, lh, rh])
+    return np.concatenate([lh, rh])
 
 def get_existing_data(start, no_sequences, sequence_length):
     action_index = 0
@@ -60,7 +60,7 @@ def get_existing_data(start, no_sequences, sequence_length):
     for i in range(action_index, actions.size):
         for j in range(sequence, sequence + no_sequences):
             for k in range(frame_num, sequence_length):
-                if not os.path.exists(os.path.join(DATA_PATH, actions[i], j, k, ".npy")):
+                if not os.path.exists(os.path.join(DATA_PATH, actions[i], str(j), str(k) + ".npy")):
                     exist = False
                     action_index = i
                     sequence = j
@@ -101,7 +101,7 @@ for action in actions:
 
 cap = cv2.VideoCapture(0)
 # Set mediapipe model
-with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+with mp_holistic.Holistic(min_detection_confidence=0.75, min_tracking_confidence=0.75) as holistic:
     action, sequence, frame_num = get_existing_data(start, no_sequences, sequence_length)
 
     while cap.isOpened():
@@ -124,7 +124,7 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         # Show image
         cv2.imshow("OpenCV Feed", image)
 
-        if cv2.waitKey(50) & 0xFF == ord('s'):
+        if cv2.waitKey(5) & 0xFF == ord('s'):
             image = original_image.copy()
 
             # NEW Apply wait logic
@@ -171,14 +171,10 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
                 cv2.waitKey(1000)
                 break
 
-        if cv2.waitKey(50) & 0xFF == ord('q'):
+        if cv2.waitKey(5) & 0xFF == ord('q'):
             break
                     
     cap.release()
     cv2.destroyAllWindows()
     for i in range (1,5):
         cv2.waitKey(1)
-
-label_map = {label:num for num, label in enumerate(actions)}
-
-label_map
