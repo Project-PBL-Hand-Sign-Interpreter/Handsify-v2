@@ -51,29 +51,24 @@ def extract_keypoints(results):
     rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(21*3)
     return np.concatenate([lh, rh])
 
-def get_existing_data(start, no_sequences, sequence_length):
+def get_existing_data(start, no_sequences):
     action_index = 0
     sequence = start
-    frame_num = 0
     exist = True
     
     for i in range(action_index, actions.size):
         for j in range(sequence, sequence + no_sequences):
-            for k in range(frame_num, sequence_length):
-                if not os.path.exists(os.path.join(DATA_PATH, actions[i], str(j), str(k) + ".npy")):
-                    exist = False
-                    action_index = i
-                    sequence = j
-                    frame_num = k
-                    break
-            if not exist:
+            if not os.path.exists(os.path.join(DATA_PATH, actions[i], str(j), "0.npy")):
+                exist = False
+                action_index = i
+                sequence = j
                 break
         if not exist:
             break
 
-    return action_index, sequence, frame_num
+    return action_index, sequence
 
-DATA_PATH = os.path.join('dataset_rafjar')
+DATA_PATH = os.path.join('dataset_test_2')
 
 # Rafi = 0
 # Adji = 4
@@ -89,8 +84,8 @@ start = 0
 #                     'Tertarik', 'Untuk', 'Yang'])
 actions = np.array(['Apa', 'Anda', 'Bisa'])
 
-no_sequences = 4
-sequence_length = 20
+no_sequences = 50
+no_frames = 20
 
 for action in actions:
     for sequence in range(no_sequences):
@@ -102,7 +97,7 @@ for action in actions:
 cap = cv2.VideoCapture(0)
 # Set mediapipe model
 with mp_holistic.Holistic(min_detection_confidence=0.75, min_tracking_confidence=0.75) as holistic:
-    action, sequence, frame_num = get_existing_data(start, no_sequences, sequence_length)
+    action, sequence = get_existing_data(start, no_sequences)
 
     while cap.isOpened():
         # Read feed
@@ -118,35 +113,33 @@ with mp_holistic.Holistic(min_detection_confidence=0.75, min_tracking_confidence
         original_image = image.copy()
 
         # Write action word
-        cv2.putText(image, "Word : {}, Sequence : {}, Frame Number: {}".format(actions[action], sequence, frame_num), (15,12),
+        cv2.putText(image, "Word : {}, Sequence : {}".format(actions[action], sequence), (15,12),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
 
         # Show image
         cv2.imshow("OpenCV Feed", image)
 
         if cv2.waitKey(5) & 0xFF == ord('s'):
-            image = original_image.copy()
+            for no_frame in range(no_frames):
+                image = original_image.copy()
 
-            # NEW Apply wait logic
-            if frame_num == 0:
-                cv2.putText(image, 'STARTING COLLECTION', (120,200),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255, 0), 4, cv2.LINE_AA)
-                cv2.putText(image, 'Collecting frames for {} Video Number {}'.format(actions[action], sequence), (15,12),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
-                # Show to screen
-                cv2.imshow('OpenCV Feed', image)
-                cv2.waitKey(1000)
-            else:
-                cv2.putText(image, 'Collecting frames for {} Video Number {}'.format(actions[action], sequence), (15,12),
+                # NEW Apply wait logic
+                if no_frame == 0:
+                    cv2.putText(image, 'STARTING COLLECTION', (120,200),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255, 0), 4, cv2.LINE_AA)
+                    cv2.waitKey(1000)
+
+                cv2.putText(image, 'Collecting frames for {} Sequence Number {}'.format(actions[action], sequence), (15,12),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
                 # Show to screen
                 cv2.imshow('OpenCV Feed', image)
 
-            # NEW Export keypoints
-            keypoints = extract_keypoints(results)
-            print(keypoints)
-            npy_path = os.path.join(DATA_PATH, actions[action], str(sequence), str(frame_num))
-            np.save(npy_path, keypoints)
+                # NEW Export keypoints
+                keypoints = extract_keypoints(results)
+                print(keypoints)
+                npy_path = os.path.join(DATA_PATH, actions[action], str(sequence), str(no_frame))
+                np.save(npy_path, keypoints)
+                cv2.waitKey(500)
 
             image = original_image.copy()
             cv2.putText(image, 'SAVED', (120, 200),
@@ -154,22 +147,19 @@ with mp_holistic.Holistic(min_detection_confidence=0.75, min_tracking_confidence
             cv2.imshow('OpenCV Feed', image)
             cv2.waitKey(1000)
             
-            frame_num += 1
-            if frame_num == sequence_length:
-                frame_num = 0
-                sequence += 1
-
-            if sequence - start == no_sequences:
-                sequence = 0
-                action += 1
-
-            if action == actions.size - 1 and frame_num == sequence_length and sequence == no_sequences:
+            if action == actions.size - 1 and sequence == no_sequences - 1:
                 image = original_image.copy()
                 cv2.putText(image, 'FINISHED COLLECTING DATA', (120, 200),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
                 cv2.imshow('OpenCV Feed', image)
                 cv2.waitKey(1000)
                 break
+
+            sequence += 1
+
+            if sequence - start == no_sequences:
+                sequence = 0
+                action += 1
 
         if cv2.waitKey(5) & 0xFF == ord('q'):
             break
