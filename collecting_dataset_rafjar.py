@@ -55,13 +55,13 @@ def get_existing_data(start, no_sequences, sequence_length):
     action_index = 0
     sequence = start
     frame_num = 0
-    exist = TRUE
+    exist = True
     
     for i in range(action_index, actions.size):
         for j in range(sequence, sequence + no_sequences):
             for k in range(frame_num, sequence_length):
                 if not os.path.exists(os.path.join(DATA_PATH, actions[i], j, k, ".npy")):
-                    exist = FALSE
+                    exist = False
                     action_index = i
                     sequence = j
                     frame_num = k
