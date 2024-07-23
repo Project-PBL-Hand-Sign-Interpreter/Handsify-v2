@@ -7,6 +7,8 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout, TimeDistributed
 from tensorflow.keras.callbacks import TensorBoard
 
 DATA_PATH = 'dataset_rafjar'
+KERAS_PATH = 'keras'
+MODEL_BASE_NAME = 'test_'
 
 NO_KEYPOINTS = 468*3 + 21*3 + 21*3
 
@@ -50,6 +52,21 @@ def prepare_sequences(data_path, actions, no_sequences, sequence_length):
     y = to_categorical(labels).astype(int)
     return X, y
 
+def read_existing_models():
+    no_models = 0
+    exist = True
+
+    while exist:
+        if (os.path.exists(os.path.join(KERAS_PATH, MODEL_BASE_NAME + str(no_models) + ".h5"))):
+            no_models += 1
+        else:
+            exist = False
+    
+    return no_models
+
+model_number = read_existing_models()
+model_name = MODEL_BASE_NAME + str(model_number)
+
 X, y = prepare_sequences(DATA_PATH, actions, no_sequences, sequence_length)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05)
 
@@ -69,4 +86,4 @@ model.summary()
 
 model.fit(X_train, y_train, epochs=2000, callbacks=[tb_callback])
 
-model.save('keras/test_1.h5')
+model.save('keras/{}.h5'.format(model_name))
