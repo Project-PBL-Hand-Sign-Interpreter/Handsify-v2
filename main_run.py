@@ -69,7 +69,7 @@ def web():
     sequence = []
     sentence = []
     predictions = []
-    threshold = 0.5
+    threshold = 0.7
 
     cap = cv2.VideoCapture(0)
     # Set mediapipe model
@@ -88,11 +88,11 @@ def web():
             if is_showing_hand(results):
                 keypoints = extract_keypoints(results)
                 sequence.append(keypoints)
-                sequence = sequence[-30:]
+                sequence = sequence[-20:]
             else:
                 sequence = []
 
-            if len(sequence) == 30:
+            if len(sequence) == 20:
                 res = model.predict(np.expand_dims(sequence, axis=0))[0]
                 response = actions[np.argmax(res)]
                 print(response)

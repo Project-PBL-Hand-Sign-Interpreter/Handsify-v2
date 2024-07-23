@@ -6,7 +6,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout, TimeDistributed
 from tensorflow.keras.callbacks import TensorBoard
 
-DATA_PATH = 'dataset_rafjar'
+DATA_PATH = 'CHANGE TO NEWEST DATASET'
 KERAS_PATH = 'keras'
 MODEL_BASE_NAME = 'test_'
 
@@ -20,7 +20,7 @@ NO_KEYPOINTS = 21*3 + 21*3
 #                     'Tertarik', 'Untuk', 'Yang'])
 actions = np.array(['Apa', 'Anda', 'Bisa'])
 no_sequences = 4
-sequence_length = 20
+no_frames = 20
 
 def load_dataset_by_action(data_path, actions):
     dataset = {action: [] for action in actions}
@@ -35,15 +35,15 @@ def load_dataset_by_action(data_path, actions):
                     dataset[action].append(data)
     return dataset
 
-def prepare_sequences(data_path, actions, no_sequences, sequence_length):
+def prepare_sequences(data_path, actions, no_sequences, no_frames):
     sequences, labels = [], []
     label_map = {label: num for num, label in enumerate(actions)}
 
     for action in actions:
         for sequence in range(no_sequences):
             window = []
-            for frame_num in range(sequence_length):
-                res = np.load(os.path.join(data_path, action, str(sequence), "{}.npy".format(frame_num)))
+            for frame in range(no_frames):
+                res = np.load(os.path.join(data_path, action, str(sequence), "{}.npy".format(frame)))
                 window.append(res)
             sequences.append(window)
             labels.append(label_map[action])
@@ -67,14 +67,14 @@ def read_existing_models():
 model_number = read_existing_models()
 model_name = MODEL_BASE_NAME + str(model_number)
 
-X, y = prepare_sequences(DATA_PATH, actions, no_sequences, sequence_length)
+X, y = prepare_sequences(DATA_PATH, actions, no_sequences, no_frames)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05)
 
 log_dir = os.path.join('Logs')
 tb_callback = TensorBoard(log_dir=log_dir)
 
 model = Sequential()
-model.add(LSTM(64, return_sequences=True, activation='relu', name='lstm_1', input_shape=(sequence_length, NO_KEYPOINTS)))
+model.add(LSTM(64, return_sequences=True, activation='relu', name='lstm_1', input_shape=(no_frames, NO_KEYPOINTS)))
 model.add(LSTM(128, return_sequences=True, activation='relu', name='lstm_2'))
 model.add(LSTM(64, return_sequences=False, activation='relu', name='lstm_3'))
 model.add(Dense(64, activation='relu', name='dense_1'))
