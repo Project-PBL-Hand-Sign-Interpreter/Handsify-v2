@@ -7,12 +7,13 @@ from tensorflow import keras
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
 
-actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu',
-                    'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
-                    'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
-                    'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
-                    'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
-                    'Tertarik', 'Untuk', 'Yang'])
+# actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu',
+#                     'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
+#                     'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
+#                     'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
+#                     'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
+#                     'Tertarik', 'Untuk', 'Yang'])
+actions = np.array(["Apa", "Anda", "Bisa"])
 
 model = keras.models.load_model('keras/test_1.h5')
 
@@ -54,7 +55,7 @@ def extract_keypoints(results):
     ) if results.left_hand_landmarks else np.zeros(21*3)
     rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten(
     ) if results.right_hand_landmarks else np.zeros(21*3)
-    return np.concatenate([lh, rh])
+    return np.concatenate([face, lh, rh])
 
 def is_showing_hand(results):
     lh = np.array([[res.x, res.y, res.z] for res in results.left_hand_landmarks.landmark]).flatten(
@@ -117,17 +118,15 @@ def web():
                 #Viz logic
                 if np.unique(predictions[-10:])[0] == np.argmax(res):
                     if res[np.argmax(res)] > threshold:
-                        if len(sentence) > 0:
-                            if actions[np.argmax(res)] == sentence[-1]:
-                                sentence.append(".")
-                                sentence.append(actions[np.argmax(res)])
+                        if len(sentence) > 0 and response != sentence[-1]:
+                                sentence.append(response)
                         else:
-                            sentence.append(actions[np.argmax(res)])
+                            sentence.append(response)
 
                         if len(sentence) > 5:
                             sentence = sentence[-5:]
-
-                    sequence = []
+                        
+                        sequence = []
 
             cv2.putText(image, ' '.join(sentence), (3, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 3, cv2.LINE_AA)

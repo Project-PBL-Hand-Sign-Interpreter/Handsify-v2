@@ -51,6 +51,28 @@ def extract_keypoints(results):
     rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(21*3)
     return np.concatenate([face, lh, rh])
 
+def get_existing_data(start, no_sequences, sequence_length):
+    action_index = 0
+    sequence = start
+    frame_num = 0
+    exist = TRUE
+    
+    for i in range(action_index, actions.size):
+        for j in range(sequence, sequence + no_sequences):
+            for k in range(frame_num, sequence_length):
+                if not os.path.exists(os.path.join(DATA_PATH, actions[i], j, k, ".npy")):
+                    exist = FALSE
+                    action_index = i
+                    sequence = j
+                    frame_num = k
+                    break
+            if not exist:
+                break
+        if not exist:
+            break
+
+    return action_index, sequence, frame_num
+
 DATA_PATH = os.path.join('dataset_rafjar')
 
 # Rafi = 0
@@ -80,9 +102,7 @@ for action in actions:
 cap = cv2.VideoCapture(0)
 # Set mediapipe model
 with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-    action = 0
-    sequence = start
-    frame_num = 0
+    action, sequence, frame_num = get_existing_data(start, no_sequences, sequence_length)
 
     while cap.isOpened():
         # Read feed
