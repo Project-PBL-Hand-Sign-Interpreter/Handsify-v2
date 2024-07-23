@@ -139,7 +139,6 @@ with mp_holistic.Holistic(min_detection_confidence=0.75, min_tracking_confidence
                 print(keypoints)
                 npy_path = os.path.join(DATA_PATH, actions[action], str(sequence), str(no_frame))
                 np.save(npy_path, keypoints)
-                cv2.waitKey(500)
 
             image = original_image.copy()
             cv2.putText(image, 'SAVED', (120, 200),
