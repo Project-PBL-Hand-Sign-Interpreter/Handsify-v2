@@ -10,7 +10,7 @@ DATA_PATH = 'dataset_rafjar'
 KERAS_PATH = 'keras'
 MODEL_BASE_NAME = 'test_'
 
-NO_KEYPOINTS = 468*3 + 21*3 + 21*3
+NO_KEYPOINTS = 21*3 + 21*3
 
 # actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu', 
 #                     'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
