@@ -71,9 +71,9 @@ def get_existing_data(start, no_sequences):
 DATA_PATH = os.path.join('dataset_test_2')
 
 # Rafi = 0
-# Adji = 4
-# Alfian = 8
-# Benaya = 12
+# Adji = 50
+# Alfian = 100
+# Benaya = 150
 start = 0
 
 # actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu',
