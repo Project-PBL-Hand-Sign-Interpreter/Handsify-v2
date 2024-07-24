@@ -1,12 +1,13 @@
 import os
 import numpy as np
+import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout, TimeDistributed
 from tensorflow.keras.callbacks import TensorBoard
 
-DATA_PATH = 'CHANGE TO NEWEST DATASET'
+DATA_PATH = 'TO BE CHANGED'
 KERAS_PATH = 'keras'
 MODEL_BASE_NAME = 'test_'
 
@@ -19,7 +20,7 @@ NO_KEYPOINTS = 21*3 + 21*3
 #                     'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
 #                     'Tertarik', 'Untuk', 'Yang'])
 actions = np.array(['Apa', 'Anda', 'Bisa'])
-no_sequences = 4
+no_sequences = 16
 no_frames = 20
 
 def load_dataset_by_action(data_path, actions):
@@ -81,9 +82,9 @@ model.add(Dense(64, activation='relu', name='dense_1'))
 model.add(Dense(32, activation='relu', name='dense_2'))
 model.add(Dense(actions.shape[0], activation='softmax', name='output_dense'))
 
-model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
+model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['accuracy'])
 model.summary()
 
-model.fit(X_train, y_train, epochs=2000, callbacks=[tb_callback])
+model.fit(X_train, y_train, epochs=2000, batch_size=32, validation_split=0.1, callbacks=[tb_callback], verbose=1)
 
 model.save('keras/{}.h5'.format(model_name))
