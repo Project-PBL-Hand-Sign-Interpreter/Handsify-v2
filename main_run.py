@@ -3,6 +3,9 @@ import numpy as np
 import mediapipe as mp
 from tkinter import *
 from tensorflow import keras
+from tensorflow.keras.callbacks import EarlyStopping
+import tensorflow as tf
+
 
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
@@ -15,7 +18,7 @@ mp_drawing = mp.solutions.drawing_utils
 #                     'Tertarik', 'Untuk', 'Yang'])
 actions = np.array(["Apa", "Anda", "Bisa"])
 
-model = keras.models.load_model('keras/test_1.h5')
+model = keras.models.load_model('keras/test_2.h5')
 
 
 def mediapipe_detection(image, model):

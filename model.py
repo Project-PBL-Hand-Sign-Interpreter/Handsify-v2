@@ -6,8 +6,9 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout, TimeDistributed
 from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import EarlyStopping
 
-DATA_PATH = 'TO BE CHANGED'
+DATA_PATH = r'C:\Users\Benaya\Downloads\collect_data\dataset_test_2'
 KERAS_PATH = 'keras'
 MODEL_BASE_NAME = 'test_'
 
@@ -20,7 +21,7 @@ NO_KEYPOINTS = 21*3 + 21*3
 #                     'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
 #                     'Tertarik', 'Untuk', 'Yang'])
 actions = np.array(['Apa', 'Anda', 'Bisa'])
-no_sequences = 16
+no_sequences = 50
 no_frames = 20
 
 def load_dataset_by_action(data_path, actions):
@@ -83,8 +84,15 @@ model.add(Dense(32, activation='relu', name='dense_2'))
 model.add(Dense(actions.shape[0], activation='softmax', name='output_dense'))
 
 model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['accuracy'])
+
+# early_stopping = EarlyStopping(
+#     monitor='val_loss',    # Metric to be monitored
+#     patience=100,            # Number of epochs with no improvement after which training will be stopped
+#     restore_best_weights=True  # Whether to restore model weights from the epoch with the best value of the monitored quantity
+# )
 model.summary()
 
+#history = model.fit(X_train, y_train, epochs=2000, batch_size=32, validation_split=0.1, callbacks=[tb_callback], verbose=1)
 model.fit(X_train, y_train, epochs=2000, batch_size=32, validation_split=0.1, callbacks=[tb_callback], verbose=1)
 
 model.save('keras/{}.h5'.format(model_name))
