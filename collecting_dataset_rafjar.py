@@ -81,8 +81,8 @@ start = 150
 #                     'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
 #                     'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
 #                     'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
-#                     'Tertarik', 'Untuk', 'Yang'])
-actions = np.array(['Bisa'])
+#                     'Ingin', 'Untuk', 'Yang'])
+actions = np.array(['Dengan'])
 
 no_sequences = 50
 no_frames = 20
