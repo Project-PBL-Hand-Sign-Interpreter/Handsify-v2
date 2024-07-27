@@ -10,15 +10,15 @@ import tensorflow as tf
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
 
-# actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu',
-#                     'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
-#                     'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
-#                     'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
-#                     'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
-#                     'Tertarik', 'Untuk', 'Yang'])
-actions = np.array(["Apa", "Anda", "Bisa"])
+actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu',
+                    'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
+                    'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
+                    'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
+                    'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
+                    'Ingin', 'Untuk', 'Yang'])
+# actions = np.array(["Apa", "Anda", "Bisa"])
 
-model = keras.models.load_model('keras/test_2.h5')
+model = keras.models.load_model('keras/test_4.h5')
 
 
 def mediapipe_detection(image, model):

@@ -8,20 +8,20 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout, TimeDistributed
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras.callbacks import EarlyStopping
 
-DATA_PATH = r'C:\Users\Benaya\Downloads\collect_data\dataset_test_2'
+DATA_PATH = r'C:\Users\Benaya\Downloads\collect_data\dataset_test_ben'
 KERAS_PATH = 'keras'
 MODEL_BASE_NAME = 'test_'
 
 NO_KEYPOINTS = 21*3 + 21*3
 
-# actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu', 
-#                     'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
-#                     'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
-#                     'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
-#                     'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
-#                     'Tertarik', 'Untuk', 'Yang'])
-actions = np.array(['Apa', 'Anda', 'Bisa'])
-no_sequences = 50
+actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu', 
+                    'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
+                    'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
+                    'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
+                    'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
+                    'Ingin', 'Untuk', 'Yang'])
+# actions = np.array(['Apa', 'Anda', 'Bisa'])
+no_sequences = 150
 no_frames = 20
 
 def load_dataset_by_action(data_path, actions):
@@ -37,19 +37,36 @@ def load_dataset_by_action(data_path, actions):
                     dataset[action].append(data)
     return dataset
 
-def prepare_sequences(data_path, actions, no_sequences, no_frames):
+# def prepare_sequences(data_path, actions, no_sequences, no_frames, start_sequence = 0):
+#     sequences, labels = [], []
+#     label_map = {label: num for num, label in enumerate(actions)}
+
+#     for action in actions:
+#         for sequence in range(no_sequences):
+#             window = []
+#             for frame in range(no_frames):
+#                 res = np.load(os.path.join(data_path, action, str(sequence), "{}.npy".format(frame)))
+#                 window.append(res)
+#             sequences.append(window)
+#             labels.append(label_map[action])
+    
+#     X = np.array(sequences)
+#     y = to_categorical(labels).astype(int)
+#     return X, y
+
+def prepare_sequences(data_path, actions, no_sequences, no_frames, start_sequence = 0): #mulai dari sequence ke-50
     sequences, labels = [], []
     label_map = {label: num for num, label in enumerate(actions)}
 
     for action in actions:
-        for sequence in range(no_sequences):
+        for sequence in range(start_sequence, start_sequence + no_sequences):
             window = []
             for frame in range(no_frames):
                 res = np.load(os.path.join(data_path, action, str(sequence), "{}.npy".format(frame)))
                 window.append(res)
             sequences.append(window)
             labels.append(label_map[action])
-
+    
     X = np.array(sequences)
     y = to_categorical(labels).astype(int)
     return X, y
@@ -69,7 +86,8 @@ def read_existing_models():
 model_number = read_existing_models()
 model_name = MODEL_BASE_NAME + str(model_number)
 
-X, y = prepare_sequences(DATA_PATH, actions, no_sequences, no_frames)
+start_sequence =  50 #start from sequences 50
+X, y = prepare_sequences(DATA_PATH, actions, no_sequences, no_frames, start_sequence)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05)
 
 log_dir = os.path.join('Logs')
