@@ -68,13 +68,13 @@ def get_existing_data(start, no_sequences):
 
     return action_index, sequence
 
-DATA_PATH = os.path.join('dataset_test_ben')
+DATA_PATH = os.path.join('dataset_uji_coba')
 
 # Rafi = 0
 # Adji = 50
 # Alfian = 100
 # Benaya = 150
-start = 150
+start = 0
 
 # actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu',
 #                     'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',

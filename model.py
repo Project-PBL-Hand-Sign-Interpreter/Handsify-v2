@@ -111,6 +111,6 @@ model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['accur
 model.summary()
 
 #history = model.fit(X_train, y_train, epochs=2000, batch_size=32, validation_split=0.1, callbacks=[tb_callback], verbose=1)
-model.fit(X_train, y_train, epochs=2000, batch_size=32, validation_split=0.1, callbacks=[tb_callback], verbose=1)
+model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.1, callbacks=[tb_callback], verbose=1)
 
 model.save('keras/{}.h5'.format(model_name))

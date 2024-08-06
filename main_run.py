@@ -5,6 +5,7 @@ from tkinter import *
 from tensorflow import keras
 from tensorflow.keras.callbacks import EarlyStopping
 import tensorflow as tf
+import urllib
 
 
 mp_holistic = mp.solutions.holistic
@@ -74,15 +75,24 @@ def web():
     predictions = []
     threshold = 0.7
 
-    cap = cv2.VideoCapture(0)
+
+    cap = cv2.VideoCapture(0);
+    # url = "http://192.168.220.59/cam-hi.jpg"
     # Set mediapipe model
     with mp_holistic.Holistic(min_detection_confidence=0.75, min_tracking_confidence=0.75) as holistic:
-        while cap.isOpened():
+        # while True:
+        while cap.isOpened() :
             # Read feed
+            # imgResp = urllib.request.urlopen(url)
+            # imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
+            # img = cv2.imdecode(imgNp, -1)
+
             ret, frame = cap.read()
 
             # Make detections
-            image, results = mediapipe_detection(frame, holistic)
+            # image, results = mediapipe_detection(img, holistic)
+
+            image, results = mediapipe_detection(frame, holistic);
 
             # Draw landmarks
             draw_styled_landmarks(image, results)
@@ -126,7 +136,7 @@ def web():
                         else:
                             sentence.append(response)
 
-                        if len(sentence) > 5:
+                        if len(sentence) > 10:
                             sentence = sentence[-5:]
                         
                         sequence = []
@@ -140,11 +150,12 @@ def web():
             # Break gracefully
             if cv2.waitKey(10) & 0xFF == ord('q'):
                 break
-
+        
         cap.release()
         cv2.destroyAllWindows()
-        for i in range(1, 5):
+        for i in range (1, 5) :
             cv2.waitKey(1)
+
 
 
 root = Tk()
