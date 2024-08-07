@@ -76,23 +76,23 @@ def web():
     threshold = 0.7
 
 
-    cap = cv2.VideoCapture(0);
-    # url = "http://192.168.220.59/cam-hi.jpg"
+    # cap = cv2.VideoCapture(0);
+    url = "http://192.168.220.59/cam-hi.jpg"
     # Set mediapipe model
     with mp_holistic.Holistic(min_detection_confidence=0.75, min_tracking_confidence=0.75) as holistic:
-        # while True:
-        while cap.isOpened() :
+        while True:
+        # while cap.isOpened() :
             # Read feed
-            # imgResp = urllib.request.urlopen(url)
-            # imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
-            # img = cv2.imdecode(imgNp, -1)
+            imgResp = urllib.request.urlopen(url)
+            imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
+            img = cv2.imdecode(imgNp, -1)
 
-            ret, frame = cap.read()
+            # ret, frame = cap.read()
 
             # Make detections
-            # image, results = mediapipe_detection(img, holistic)
+            image, results = mediapipe_detection(img, holistic)
 
-            image, results = mediapipe_detection(frame, holistic);
+            # image, results = mediapipe_detection(frame, holistic);
 
             # Draw landmarks
             draw_styled_landmarks(image, results)
@@ -117,14 +117,14 @@ def web():
                 else:
                     pass
 
-                # if len(sentence) > 0:
-                #     if response == sentence[-1]:
-                #         sentence.append(" . " + response)
-                # else:
-                #     sentence.append(response)
+                if len(sentence) > 0:
+                    if response == sentence[-1]:
+                        sentence.append(" . " + response)
+                else:
+                    sentence.append(response)
 
-                # if len(sentence) > 5:
-                #     sentence = sentence[-5:]
+                if len(sentence) > 5:
+                    sentence = sentence[-5:]
 
                 predictions.append(np.argmax(res))
 
