@@ -5,20 +5,21 @@ from tkinter import *
 from tensorflow import keras
 from tensorflow.keras.callbacks import EarlyStopping
 import tensorflow as tf
+import urllib
 
 
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
 
-# actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu',
-#                     'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
-#                     'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
-#                     'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
-#                     'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
-#                     'Tertarik', 'Untuk', 'Yang'])
-actions = np.array(["Apa", "Anda", "Bisa"])
+actions = np.array(['Ada', 'Anda', 'Apa', 'Atau', 'Bantu',
+                    'Banyak', 'Beli', 'Bisa', 'Dengan', 'Dingin',
+                    'Gula', 'Hallo', 'Ibu', 'Ini', 'Kakak', 'Kopi',
+                    'Malam', 'Pagi', 'Pak', 'Panas', 'Saya', 'Sedang',
+                    'Sedikit', 'Selamat', 'Siang', 'Terimakasih',
+                    'Ingin', 'Untuk', 'Yang'])
+# actions = np.array(["Apa", "Anda", "Bisa"])
 
-model = keras.models.load_model('keras/test_2.h5')
+model = keras.models.load_model('keras/test_4.h5')
 
 
 def mediapipe_detection(image, model):
@@ -74,15 +75,24 @@ def web():
     predictions = []
     threshold = 0.7
 
-    cap = cv2.VideoCapture(0)
+
+    # cap = cv2.VideoCapture(0);
+    url = "http://192.168.220.59/cam-hi.jpg"
     # Set mediapipe model
     with mp_holistic.Holistic(min_detection_confidence=0.75, min_tracking_confidence=0.75) as holistic:
-        while cap.isOpened():
+        while True:
+        # while cap.isOpened() :
             # Read feed
-            ret, frame = cap.read()
+            imgResp = urllib.request.urlopen(url)
+            imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
+            img = cv2.imdecode(imgNp, -1)
+
+            # ret, frame = cap.read()
 
             # Make detections
-            image, results = mediapipe_detection(frame, holistic)
+            image, results = mediapipe_detection(img, holistic)
+
+            # image, results = mediapipe_detection(frame, holistic);
 
             # Draw landmarks
             draw_styled_landmarks(image, results)
@@ -107,14 +117,14 @@ def web():
                 else:
                     pass
 
-                # if len(sentence) > 0:
-                #     if response == sentence[-1]:
-                #         sentence.append(" . " + response)
-                # else:
-                #     sentence.append(response)
+                if len(sentence) > 0:
+                    if response == sentence[-1]:
+                        sentence.append(" . " + response)
+                else:
+                    sentence.append(response)
 
-                # if len(sentence) > 5:
-                #     sentence = sentence[-5:]
+                if len(sentence) > 5:
+                    sentence = sentence[-5:]
 
                 predictions.append(np.argmax(res))
 
@@ -126,7 +136,7 @@ def web():
                         else:
                             sentence.append(response)
 
-                        if len(sentence) > 5:
+                        if len(sentence) > 10:
                             sentence = sentence[-5:]
                         
                         sequence = []
@@ -140,11 +150,12 @@ def web():
             # Break gracefully
             if cv2.waitKey(10) & 0xFF == ord('q'):
                 break
-
+        
         cap.release()
         cv2.destroyAllWindows()
-        for i in range(1, 5):
+        for i in range (1, 5) :
             cv2.waitKey(1)
+
 
 
 root = Tk()
